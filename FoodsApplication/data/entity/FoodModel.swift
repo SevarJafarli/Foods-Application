@@ -7,7 +7,7 @@
 
 import Foundation
 
-class FoodModel {
+class FoodModel: Codable {
     var id: Int?
     var name: String?
     var image: String?

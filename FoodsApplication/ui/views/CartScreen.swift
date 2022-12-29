@@ -8,32 +8,59 @@
 import UIKit
 
 class CartScreen: UIViewController {
-    var cartProducts = [FoodModel]()
+    var cartProducts = [CartFoodModel]()
+    var viewModel = CartViewModel()
+    
+    var total:Int = 0;
+    
     @IBOutlet weak var cartProductsTable: UITableView!
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        var c1 = FoodModel(id: 1, name: "clickend", image: "food", price: 4, category: "Meals")
-        cartProducts.append(c1)
         
         cartProductsTable.delegate = self
         cartProductsTable.dataSource = self
-   
+        
+        
+        _ = viewModel.cartFoodsList.subscribe(onNext: { list in
+            self.cartProducts = list
+            DispatchQueue.main.async {
+                self.cartProductsTable.reloadData()
+            }
+        })
+        
+        
+        for i in self.cartProducts {
+            total += ( i.price! * i.orderAmount!)
+            print(total)
+        }
+       
+        
+        
     }
     
-
-  
-
+    override func viewWillAppear(_ animated: Bool) {
+        viewModel.loadCartFoods()
+        
+        
+    }
 }
 
 extension CartScreen: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cartProduct = cartProducts[indexPath.row]
         let cell = tableView.dequeueReusableCell(withIdentifier: "cartProduct") as! CartProductTableViewCell
-        cell.foodImage.image = UIImage(named: cartProduct.image!)
-        cell.title.text = cartProduct.name
-        cell.price.text  = "$\(cartProduct.price!)"
+     
+        cell.foodImage.setImageFromUrl(ImageURL: "http://kasimadalan.pe.hu/foods/images/\(cartProduct.image!)")
+            cell.title.text = cartProduct.name
+            cell.price.text  = "$\(cartProduct.price!)"
+            cell.count.text = "\(cartProduct.orderAmount!)"
+         
+        
         return cell
     }
+    
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return cartProducts.count
@@ -60,8 +87,9 @@ extension CartScreen: UITableViewDelegate, UITableViewDataSource {
             
             let yesAction = UIAlertAction(title: "Delete", style: .destructive){
                 action in
+                self.viewModel.removeFromCart(cartId: cartProduct.cartId!)
                 print("deleted")
-//                self.homePresenterObject?.delete(person: person)
+
             }
             alert.addAction(yesAction)
             

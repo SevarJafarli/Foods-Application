@@ -13,3 +13,5 @@ class FoodCardViewCell: UICollectionViewCell {
     @IBOutlet weak var foodPrice: UILabel!
     @IBOutlet weak var foodImage: UIImageView!
 }
+
+

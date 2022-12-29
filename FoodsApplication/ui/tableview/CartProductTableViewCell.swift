@@ -13,6 +13,7 @@ class CartProductTableViewCell: UITableViewCell {
     @IBOutlet weak var foodImage: UIImageView!
     @IBOutlet weak var price: UILabel!
     @IBOutlet weak var title: UILabel!
+    @IBOutlet weak var count: UILabel!
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -27,3 +28,18 @@ class CartProductTableViewCell: UITableViewCell {
     }
 
 }
+
+
+extension UIImageView {
+    func setImageFromUrl(ImageURL :String) {
+       URLSession.shared.dataTask( with: NSURL(string:ImageURL)! as URL, completionHandler: {
+          (data, response, error) -> Void in
+          DispatchQueue.main.async {
+             if let data = data {
+                self.image = UIImage(data: data)
+             }
+          }
+       }).resume()
+    }
+}
+
